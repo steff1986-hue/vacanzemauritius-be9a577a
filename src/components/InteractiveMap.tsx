@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   COUNTRIES,
   MAURITIUS,
@@ -7,16 +7,133 @@ import {
   SafariCountry,
 } from "@/data/countries";
 import { Plane, ArrowRight, MapPin, Sparkles, MousePointerClick } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+
+/* --- Static SVG sub-trees, memoized so they never re-render on hover/select --- */
+
+const MapDefs = memo(({ withDots }: { withDots: boolean }) => (
+  <defs>
+    <linearGradient id="ocean" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="hsl(var(--celeste))" stopOpacity="0.55" />
+      <stop offset="55%" stopColor="hsl(var(--aqua))" stopOpacity="0.35" />
+      <stop offset="100%" stopColor="hsl(var(--ocean))" stopOpacity="0.45" />
+    </linearGradient>
+    <radialGradient id="ocean-light" cx="0.75" cy="0.7" r="0.5">
+      <stop offset="0%" stopColor="hsl(var(--celeste))" stopOpacity="0.45" />
+      <stop offset="100%" stopColor="hsl(var(--celeste))" stopOpacity="0" />
+    </radialGradient>
+    <linearGradient id="land" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="hsl(var(--beige))" />
+      <stop offset="60%" stopColor="hsl(var(--khaki))" stopOpacity="0.85" />
+      <stop offset="100%" stopColor="hsl(var(--savanna))" stopOpacity="0.55" />
+    </linearGradient>
+    <linearGradient id="country-active" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="hsl(var(--accent))" />
+      <stop offset="100%" stopColor="hsl(var(--savanna))" />
+    </linearGradient>
+    <linearGradient id="country-hover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="hsl(var(--primary) / 0.45)" />
+      <stop offset="100%" stopColor="hsl(var(--primary) / 0.25)" />
+    </linearGradient>
+    {withDots && (
+      <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="0.7" fill="hsl(var(--ocean) / 0.18)" />
+      </pattern>
+    )}
+  </defs>
+));
+MapDefs.displayName = "MapDefs";
+
+const StaticBackground = memo(({ withDots }: { withDots: boolean }) => (
+  <g shapeRendering="optimizeSpeed">
+    <rect width="1000" height="700" fill="url(#ocean)" />
+    {withDots && <rect width="1000" height="700" fill="url(#dots)" />}
+    <rect width="1000" height="700" fill="url(#ocean-light)" />
+    <g stroke="hsl(var(--ocean-deep) / 0.12)" strokeWidth="0.6" strokeDasharray="2 5">
+      <line x1="0" y1="170" x2="1000" y2="170" />
+      <line x1="0" y1="305" x2="1000" y2="305" />
+      <line x1="0" y1="440" x2="1000" y2="440" />
+      <line x1="0" y1="575" x2="1000" y2="575" />
+    </g>
+    <text
+      x="14"
+      y="302"
+      fontSize="9"
+      fill="hsl(var(--ocean-deep) / 0.45)"
+      fontFamily="Inter, sans-serif"
+      letterSpacing="3"
+    >
+      EQUATORE
+    </text>
+  </g>
+));
+StaticBackground.displayName = "StaticBackground";
+
+const StaticLand = memo(() => (
+  <g shapeRendering="geometricPrecision">
+    <path
+      d={AFRICA_PATH}
+      fill="url(#land)"
+      stroke="hsl(var(--warm-brown) / 0.4)"
+      strokeWidth="1.2"
+    />
+    <path
+      d={MADAGASCAR_PATH}
+      fill="url(#land)"
+      stroke="hsl(var(--warm-brown) / 0.4)"
+      strokeWidth="1"
+      opacity="0.92"
+    />
+    <text
+      x="660"
+      y="500"
+      fontSize="10"
+      fontWeight="500"
+      fill="hsl(var(--warm-brown))"
+      fontFamily="Inter, sans-serif"
+      letterSpacing="2"
+      opacity="0.75"
+    >
+      MADAGASCAR
+    </text>
+  </g>
+));
+StaticLand.displayName = "StaticLand";
+
+const Compass = memo(() => (
+  <g transform="translate(940, 80)">
+    <circle r="22" fill="hsl(var(--background) / 0.85)" stroke="hsl(var(--border))" strokeWidth="0.8" />
+    <path d="M0,-14 L4,0 L0,14 L-4,0 Z" fill="hsl(var(--accent))" />
+    <text
+      x="0"
+      y="-26"
+      textAnchor="middle"
+      fontSize="9"
+      fontWeight="700"
+      fill="hsl(var(--foreground))"
+      fontFamily="Inter, sans-serif"
+    >
+      N
+    </text>
+  </g>
+));
+Compass.displayName = "Compass";
 
 const InteractiveMap = () => {
+  const isMobile = useIsMobile();
+  const reduced = useReducedMotion();
+
   const [active, setActive] = useState<SafariCountry>(
-    COUNTRIES.find((c) => c.id === "tanzania") ?? COUNTRIES[0],
+    () => COUNTRIES.find((c) => c.id === "tanzania") ?? COUNTRIES[0],
   );
   const [hovered, setHovered] = useState<string | null>(null);
   const pathRef = useRef<SVGPathElement | null>(null);
   const [pathLength, setPathLength] = useState(0);
 
-  // Build a curved flight path from active country → Mauritius
+  // Trim heavy effects on mobile or when motion is reduced
+  const lite = isMobile || reduced;
+
   const flightD = useMemo(() => {
     const mx = (active.cx + MAURITIUS.cx) / 2;
     const my = Math.min(active.cy, MAURITIUS.cy) - 90;
@@ -25,19 +142,29 @@ const InteractiveMap = () => {
 
   useEffect(() => {
     if (pathRef.current) {
+      // getTotalLength is sync layout work — do it once per route change
       setPathLength(pathRef.current.getTotalLength());
     }
   }, [flightD]);
 
-  // Plane position: ~62% along the curve (visually nice apex offset)
   const planePos = useMemo(() => {
-    if (!pathRef.current || pathLength === 0)
-      return { x: (active.cx + MAURITIUS.cx) / 2, y: (active.cy + MAURITIUS.cy) / 2 - 50, angle: 0 };
+    if (!pathRef.current || pathLength === 0) {
+      return {
+        x: (active.cx + MAURITIUS.cx) / 2,
+        y: (active.cy + MAURITIUS.cy) / 2 - 50,
+        angle: 0,
+      };
+    }
     const p = pathRef.current.getPointAtLength(pathLength * 0.62);
     const p2 = pathRef.current.getPointAtLength(Math.min(pathLength, pathLength * 0.62 + 1));
     const angle = (Math.atan2(p2.y - p.y, p2.x - p.x) * 180) / Math.PI;
     return { x: p.x, y: p.y, angle };
   }, [pathLength, active]);
+
+  // Stable handlers — prevent child re-renders & event-listener churn
+  const handleSelect = useCallback((c: SafariCountry) => setActive(c), []);
+  const handleEnter = useCallback((id: string) => setHovered(id), []);
+  const handleLeave = useCallback(() => setHovered(null), []);
 
   return (
     <section
@@ -57,7 +184,7 @@ const InteractiveMap = () => {
             Ogni paese è un ingresso diverso al continente — ogni finale alle Mauritius è cucito di conseguenza.
           </p>
           <div className="mt-5 inline-flex items-center gap-2 text-sm text-accent font-medium bg-accent/10 px-4 py-2 rounded-full border border-accent/20">
-            <MousePointerClick size={15} className="animate-pulse-dot" />
+            <MousePointerClick size={15} className={reduced ? "" : "animate-pulse-dot"} />
             Clicca una destinazione safari e guarda come si collega alle Mauritius
           </div>
         </div>
@@ -69,7 +196,7 @@ const InteractiveMap = () => {
 
             {/* Selected route badge */}
             <div className="absolute top-4 left-4 z-10 glass px-3 py-1.5 rounded-full border border-border shadow-soft flex items-center gap-2 text-xs font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse-dot" />
+              <span className={`w-1.5 h-1.5 rounded-full bg-accent ${reduced ? "" : "animate-pulse-dot"}`} />
               <span className="text-muted-foreground uppercase tracking-[0.18em]">Rotta</span>
               <span className="text-foreground">
                 {active.name} <span className="text-accent">→</span> Mauritius
@@ -81,104 +208,11 @@ const InteractiveMap = () => {
               className="w-full h-auto relative"
               role="img"
               aria-label="Mappa interattiva Africa orientale, australe e Mauritius nell'Oceano Indiano"
+              style={{ contain: "layout paint", willChange: "auto" }}
             >
-              <defs>
-                {/* Ocean — deep gradient with subtle radial light */}
-                <linearGradient id="ocean" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--celeste))" stopOpacity="0.55" />
-                  <stop offset="55%" stopColor="hsl(var(--aqua))" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="hsl(var(--ocean))" stopOpacity="0.45" />
-                </linearGradient>
-                <radialGradient id="ocean-light" cx="0.75" cy="0.7" r="0.5">
-                  <stop offset="0%" stopColor="hsl(var(--celeste))" stopOpacity="0.45" />
-                  <stop offset="100%" stopColor="hsl(var(--celeste))" stopOpacity="0" />
-                </radialGradient>
-
-                {/* Land — africa */}
-                <linearGradient id="land" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--beige))" />
-                  <stop offset="60%" stopColor="hsl(var(--khaki))" stopOpacity="0.85" />
-                  <stop offset="100%" stopColor="hsl(var(--savanna))" stopOpacity="0.55" />
-                </linearGradient>
-
-                {/* Country active gradient */}
-                <linearGradient id="country-active" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--accent))" />
-                  <stop offset="100%" stopColor="hsl(var(--savanna))" />
-                </linearGradient>
-
-                {/* Country hover */}
-                <linearGradient id="country-hover" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.45)" />
-                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.25)" />
-                </linearGradient>
-
-                <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="4" result="b" />
-                  <feMerge>
-                    <feMergeNode in="b" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-
-                <filter id="land-shadow" x="-10%" y="-10%" width="120%" height="120%">
-                  <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="hsl(150 35% 12%)" floodOpacity="0.18" />
-                </filter>
-
-                {/* Subtle topographic dot pattern for ocean */}
-                <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
-                  <circle cx="2" cy="2" r="0.7" fill="hsl(var(--ocean) / 0.18)" />
-                </pattern>
-              </defs>
-
-              {/* Ocean base */}
-              <rect width="1000" height="700" fill="url(#ocean)" />
-              <rect width="1000" height="700" fill="url(#dots)" />
-              <rect width="1000" height="700" fill="url(#ocean-light)" />
-
-              {/* Latitude reference lines (very subtle) */}
-              <g stroke="hsl(var(--ocean-deep) / 0.12)" strokeWidth="0.6" strokeDasharray="2 5">
-                <line x1="0" y1="170" x2="1000" y2="170" />
-                <line x1="0" y1="305" x2="1000" y2="305" /> {/* Equator */}
-                <line x1="0" y1="440" x2="1000" y2="440" />
-                <line x1="0" y1="575" x2="1000" y2="575" />
-              </g>
-              <text x="14" y="302" fontSize="9" fill="hsl(var(--ocean-deep) / 0.45)" fontFamily="Inter, sans-serif" letterSpacing="3">
-                EQUATORE
-              </text>
-
-              {/* Africa continent */}
-              <g filter="url(#land-shadow)">
-                <path
-                  d={AFRICA_PATH}
-                  fill="url(#land)"
-                  stroke="hsl(var(--warm-brown) / 0.4)"
-                  strokeWidth="1.2"
-                />
-              </g>
-
-              {/* Madagascar */}
-              <g filter="url(#land-shadow)">
-                <path
-                  d={MADAGASCAR_PATH}
-                  fill="url(#land)"
-                  stroke="hsl(var(--warm-brown) / 0.4)"
-                  strokeWidth="1"
-                  opacity="0.92"
-                />
-                <text
-                  x="660"
-                  y="500"
-                  fontSize="10"
-                  fontWeight="500"
-                  fill="hsl(var(--warm-brown))"
-                  fontFamily="Inter, sans-serif"
-                  letterSpacing="2"
-                  opacity="0.75"
-                >
-                  MADAGASCAR
-                </text>
-              </g>
+              <MapDefs withDots={!lite} />
+              <StaticBackground withDots={!lite} />
+              <StaticLand />
 
               {/* Country shapes (interactive) */}
               {COUNTRIES.map((c) => {
@@ -193,17 +227,20 @@ const InteractiveMap = () => {
                   <g
                     key={c.id}
                     className="cursor-pointer"
-                    onClick={() => setActive(c)}
-                    onMouseEnter={() => setHovered(c.id)}
-                    onMouseLeave={() => setHovered(null)}
+                    onClick={() => handleSelect(c)}
+                    onMouseEnter={() => handleEnter(c.id)}
+                    onMouseLeave={handleLeave}
                   >
                     <path
                       d={c.path}
                       fill={fill}
                       stroke={isActive ? "hsl(var(--accent))" : "hsl(var(--primary) / 0.55)"}
                       strokeWidth={isActive ? 2 : 1.2}
-                      filter={isActive ? "url(#soft-glow)" : undefined}
-                      style={{ transition: "all 0.45s cubic-bezier(0.22,1,0.36,1)" }}
+                      style={{
+                        transition: reduced
+                          ? "none"
+                          : "fill 0.35s cubic-bezier(0.22,1,0.36,1), stroke 0.35s",
+                      }}
                     />
                   </g>
                 );
@@ -219,11 +256,15 @@ const InteractiveMap = () => {
                 strokeWidth="2.2"
                 strokeDasharray="7 7"
                 strokeLinecap="round"
-                style={{
-                  strokeDasharray: pathLength || 1000,
-                  strokeDashoffset: pathLength || 1000,
-                  animation: "draw-line 1.6s cubic-bezier(0.22,1,0.36,1) forwards",
-                }}
+                style={
+                  reduced
+                    ? { opacity: 0.85 }
+                    : {
+                        strokeDasharray: pathLength || 1000,
+                        strokeDashoffset: pathLength || 1000,
+                        animation: "draw-line 1.6s cubic-bezier(0.22,1,0.36,1) forwards",
+                      }
+                }
               />
 
               {/* Country pins + labels */}
@@ -234,9 +275,9 @@ const InteractiveMap = () => {
                   <g
                     key={`pin-${c.id}`}
                     className="cursor-pointer"
-                    onClick={() => setActive(c)}
-                    onMouseEnter={() => setHovered(c.id)}
-                    onMouseLeave={() => setHovered(null)}
+                    onClick={() => handleSelect(c)}
+                    onMouseEnter={() => handleEnter(c.id)}
+                    onMouseLeave={handleLeave}
                   >
                     {(isActive || isHover) && (
                       <circle
@@ -244,7 +285,7 @@ const InteractiveMap = () => {
                         cy={c.cy}
                         r="16"
                         fill={isActive ? "hsl(var(--accent) / 0.25)" : "hsl(var(--primary) / 0.2)"}
-                        className={isActive ? "animate-pulse-dot" : ""}
+                        className={isActive && !reduced ? "animate-pulse-dot" : ""}
                       />
                     )}
                     <circle
@@ -254,10 +295,9 @@ const InteractiveMap = () => {
                       fill={isActive ? "hsl(var(--accent))" : "hsl(var(--primary))"}
                       stroke="hsl(var(--background))"
                       strokeWidth="2"
-                      style={{ transition: "all 0.3s ease" }}
+                      style={{ transition: reduced ? "none" : "r 0.25s ease, fill 0.25s ease" }}
                     />
-                    {/* Label with subtle backdrop */}
-                    <g style={{ transition: "all 0.3s ease" }}>
+                    <g>
                       <rect
                         x={c.cx + 10}
                         y={c.cy - 9}
@@ -290,7 +330,7 @@ const InteractiveMap = () => {
                   cy={MAURITIUS.cy}
                   r="26"
                   fill="hsl(var(--ocean) / 0.18)"
-                  className="animate-pulse-dot"
+                  className={reduced ? "" : "animate-pulse-dot"}
                 />
                 <circle
                   cx={MAURITIUS.cx}
@@ -317,47 +357,56 @@ const InteractiveMap = () => {
                     stroke="hsl(var(--ocean) / 0.4)"
                     strokeWidth="0.8"
                   />
-                  <text x="10" y="16" fontSize="14" fontWeight="700" fill="hsl(var(--ocean-deep))" fontFamily="Fraunces, serif">
+                  <text
+                    x="10"
+                    y="16"
+                    fontSize="14"
+                    fontWeight="700"
+                    fill="hsl(var(--ocean-deep))"
+                    fontFamily="Fraunces, serif"
+                  >
                     Mauritius
                   </text>
-                  <text x="10" y="30" fontSize="8.5" fill="hsl(var(--muted-foreground))" fontFamily="Inter, sans-serif" letterSpacing="2.5">
+                  <text
+                    x="10"
+                    y="30"
+                    fontSize="8.5"
+                    fill="hsl(var(--muted-foreground))"
+                    fontFamily="Inter, sans-serif"
+                    letterSpacing="2.5"
+                  >
                     OCEANO INDIANO
                   </text>
                 </g>
               </g>
 
-              {/* Plane on path */}
-              <g
-                transform={`translate(${planePos.x}, ${planePos.y}) rotate(${planePos.angle})`}
-                style={{ transition: "transform 0.5s ease" }}
-              >
-                <circle r="13" fill="hsl(var(--background))" stroke="hsl(var(--accent))" strokeWidth="1.5" />
-                <g transform="rotate(-45) translate(-6,-6) scale(0.55)">
-                  <path
-                    d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
-                    fill="hsl(var(--accent))"
-                  />
+              {/* Plane on path — hidden when motion is reduced */}
+              {!reduced && (
+                <g
+                  transform={`translate(${planePos.x}, ${planePos.y}) rotate(${planePos.angle})`}
+                  style={{ transition: "transform 0.5s ease" }}
+                >
+                  <circle r="13" fill="hsl(var(--background))" stroke="hsl(var(--accent))" strokeWidth="1.5" />
+                  <g transform="rotate(-45) translate(-6,-6) scale(0.55)">
+                    <path
+                      d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
+                      fill="hsl(var(--accent))"
+                    />
+                  </g>
                 </g>
-              </g>
+              )}
 
-              {/* Compass */}
-              <g transform="translate(940, 80)">
-                <circle r="22" fill="hsl(var(--background) / 0.85)" stroke="hsl(var(--border))" strokeWidth="0.8" />
-                <path d="M0,-14 L4,0 L0,14 L-4,0 Z" fill="hsl(var(--accent))" />
-                <text x="0" y="-26" textAnchor="middle" fontSize="9" fontWeight="700" fill="hsl(var(--foreground))" fontFamily="Inter, sans-serif">
-                  N
-                </text>
-              </g>
+              <Compass />
             </svg>
 
-            {/* Country tabs (desktop + mobile) */}
+            {/* Country tabs */}
             <div className="mt-4 flex flex-wrap gap-2">
               {COUNTRIES.map((c) => (
                 <button
                   key={c.id}
-                  onClick={() => setActive(c)}
-                  onMouseEnter={() => setHovered(c.id)}
-                  onMouseLeave={() => setHovered(null)}
+                  onClick={() => handleSelect(c)}
+                  onMouseEnter={() => handleEnter(c.id)}
+                  onMouseLeave={handleLeave}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-smooth ${
                     active.id === c.id
                       ? "bg-primary text-primary-foreground shadow-soft"
@@ -374,7 +423,9 @@ const InteractiveMap = () => {
           <div className="lg:col-span-2 lg:sticky lg:top-24">
             <article
               key={active.id}
-              className="bg-card border border-border rounded-2xl p-7 lg:p-8 shadow-elevated animate-fade-in"
+              className={`bg-card border border-border rounded-2xl p-7 lg:p-8 shadow-elevated ${
+                reduced ? "" : "animate-fade-in"
+              }`}
             >
               <div className="flex items-center gap-2 text-accent text-xs font-medium uppercase tracking-[0.2em] mb-3">
                 <MapPin size={14} />
