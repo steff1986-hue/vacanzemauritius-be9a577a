@@ -76,7 +76,7 @@ const Form = () => {
                 target="_blank"
                 rel="noopener"
               >
-                <MessageCircle size={18} /> +255 774 295 123
+                <MessageCircle size={18} /> +971 55 597 5546
               </a>
             </div>
           </div>
