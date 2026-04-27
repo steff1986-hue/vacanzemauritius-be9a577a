@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Mail, MessageCircle, Send } from "lucide-react";
 
 const EMAIL = "info@hoaexp.com";
-const WHATSAPP = "255774295123";
+const WHATSAPP = "971555975546";
 
 const Form = () => {
   const [data, setData] = useState({
@@ -76,7 +76,7 @@ const Form = () => {
                 target="_blank"
                 rel="noopener"
               >
-                <MessageCircle size={18} /> +255 774 295 123
+                <MessageCircle size={18} /> +971 55 597 5546
               </a>
             </div>
           </div>

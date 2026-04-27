@@ -43,8 +43,8 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="https://wa.me/255774295123" target="_blank" rel="noopener" className="flex items-center gap-2 hover:text-celeste transition-smooth">
-                  <MessageCircle size={14} /> +255 774 295 123
+                <a href="https://wa.me/971555975546" target="_blank" rel="noopener" className="flex items-center gap-2 hover:text-celeste transition-smooth">
+                  <MessageCircle size={14} /> +971 55 597 5546
                 </a>
               </li>
               <li className="flex items-center gap-2 text-primary-foreground/70">
