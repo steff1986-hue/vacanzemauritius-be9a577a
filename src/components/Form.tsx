@@ -76,7 +76,7 @@ const Form = () => {
                 target="_blank"
                 rel="noopener"
               >
-                <MessageCircle size={18} /> +971 55 597 5546
+                <MessageCircle size={18} /> Contattami su WhatsApp
               </a>
             </div>
           </div>

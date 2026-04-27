@@ -44,7 +44,7 @@ const Footer = () => {
               </li>
               <li>
                 <a href="https://wa.me/971555975546" target="_blank" rel="noopener" className="flex items-center gap-2 hover:text-celeste transition-smooth">
-                  <MessageCircle size={14} /> +971 55 597 5546
+                  <MessageCircle size={14} /> Contattami su WhatsApp
                 </a>
               </li>
               <li className="flex items-center gap-2 text-primary-foreground/70">
