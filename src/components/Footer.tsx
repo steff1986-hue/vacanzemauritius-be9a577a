@@ -1,4 +1,5 @@
 import { Mail, MessageCircle, Globe } from "lucide-react";
+import logoHoae from "@/assets/logo-hoae.png";
 
 const Footer = () => {
   return (
@@ -6,13 +7,18 @@ const Footer = () => {
       <div className="container-narrow py-16">
         <div className="grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5 mb-5">
-              <span className="w-9 h-9 rounded-full bg-accent grid place-items-center text-accent-foreground font-display font-semibold text-sm">
-                H
-              </span>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="bg-primary-foreground/10 rounded-2xl p-2 backdrop-blur-sm">
+                <img
+                  src={logoHoae}
+                  alt="Heart of Africa Expedition"
+                  className="h-12 w-auto"
+                  loading="lazy"
+                />
+              </div>
               <div className="leading-none">
                 <div className="font-display text-base font-semibold">Heart of Africa Expedition</div>
-                <div className="text-[10px] uppercase tracking-[0.22em] text-primary-foreground/60">
+                <div className="text-[10px] uppercase tracking-[0.22em] text-primary-foreground/60 mt-1">
                   vacanzemauritius.it
                 </div>
               </div>
