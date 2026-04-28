@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Concept from "@/components/Concept";
 import InteractiveMap from "@/components/InteractiveMap";
+import Combinations from "@/components/Combinations";
 import Products from "@/components/Products";
 import Partners from "@/components/Partners";
 import Founder from "@/components/Founder";
@@ -18,6 +19,7 @@ const Index = () => {
       <Hero />
       <Concept />
       <InteractiveMap />
+      <Combinations />
       <Products />
       <Partners />
       <Founder />
