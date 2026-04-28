@@ -115,6 +115,29 @@ const COMBOS: Combo[] = [
     duration: "12–14 giorni",
     accent: "ocean",
   },
+  {
+    id: "rwanda",
+    country: "Rwanda",
+    flag: "🇷🇼",
+    hero: gorillaImg,
+    tagline: "Gorilla luxury, isola come finale d'autore.",
+    description:
+      "Il combinato più essenziale e ad altissimo impatto emotivo: Kigali, Volcanoes National Park e il trekking con i gorilla di montagna, poi Mauritius per chiudere con mare, servizio e ritmo lento.",
+    safariValue:
+      "Il Rwanda concentra in pochi giorni una delle esperienze più rare al mondo: un'ora faccia a faccia con i gorilla, lodge di livello altissimo, logistica pulita e un'Africa verde, intensa, ordinata.",
+    mauritiusValue:
+      "Dopo l'intensità del trekking, Mauritius diventa il respiro finale: resort luxury, spa, lagoon protette e privacy. Perfetta per trasformare un viaggio breve in una honeymoon completa.",
+    target: "Honeymoon premium, coppie esperienziali, viaggiatori che vogliono un picco emotivo forte senza un itinerario troppo lungo.",
+    bestPeriod: "Giugno – Settembre · Dicembre – Febbraio (periodi più asciutti per il trekking)",
+    expect: [
+      "Kigali e introduzione culturale al Rwanda",
+      "Trekking gorilla al Volcanoes National Park",
+      "Lodge luxury in area montana",
+      "5 notti alle Mauritius in resort alto di gamma",
+    ],
+    duration: "10–12 giorni",
+    accent: "forest",
+  },
 ];
 
 const accentMap = {
@@ -136,7 +159,7 @@ const Combinations = () => {
             <span className="hairline" /> Le combinazioni
           </div>
           <h2 className="font-display text-4xl lg:text-5xl font-medium text-foreground leading-[1.08] text-balance">
-            Quattro Africa, una sola fine:{" "}
+            Cinque Afriche, una sola fine:{" "}
             <span className="italic text-accent">l'Oceano Indiano.</span>
           </h2>
           <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
