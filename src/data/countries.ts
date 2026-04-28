@@ -1,3 +1,16 @@
+export type Briefing = {
+  capital: string;
+  language: string;
+  currency: string;
+  bestSeason: string;
+  flightTime: string; // from Italy
+  parks: string[];
+  signature: string; // signature experience
+  wildlife: string[];
+  whyCombine: string; // why pair with Mauritius
+  accent: string; // hsl tailwind token name (e.g., "accent", "ocean")
+};
+
 export type SafariCountry = {
   id: "tanzania" | "kenya" | "uganda" | "rwanda" | "zambia";
   /** Name as used in the GeoJSON (`properties.name`) */
@@ -11,6 +24,7 @@ export type SafariCountry = {
   idealFor: string;
   finale: string;
   options: { title: string; days: string; detail: string }[];
+  briefing: Briefing;
 };
 
 export const COUNTRIES: SafariCountry[] = [
