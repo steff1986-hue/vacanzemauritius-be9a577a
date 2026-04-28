@@ -5,6 +5,7 @@ import logoHoae from "@/assets/logo-hoae.png";
 const links = [
   { href: "#concept", label: "Concept" },
   { href: "#mappa", label: "Mappa" },
+  { href: "#combinazioni", label: "Combinazioni" },
   { href: "#prodotti", label: "Prodotti" },
   { href: "#partner", label: "Partner" },
   { href: "#founder", label: "Founder" },
