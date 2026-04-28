@@ -1,5 +1,6 @@
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import logoHoae from "@/assets/logo-hoae.png";
 
 const links = [
   { href: "#concept", label: "Concept" },
@@ -28,11 +29,14 @@ const Navbar = () => {
       }`}
     >
       <nav className="container-narrow flex items-center justify-between h-16 lg:h-20">
-        <a href="#top" className="flex items-center gap-2.5 group">
-          <span className="w-9 h-9 rounded-full bg-forest grid place-items-center text-primary-foreground font-display font-semibold text-sm shadow-soft">
-            H
-          </span>
-          <span className="flex flex-col leading-none">
+        <a href="#top" className="flex items-center gap-3 group">
+          <img
+            src={logoHoae}
+            alt="Heart of Africa Expedition"
+            className={`h-10 lg:h-12 w-auto transition-smooth ${scrolled ? "" : "drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]"}`}
+            loading="eager"
+          />
+          <span className="hidden sm:flex flex-col leading-none">
             <span className={`font-display font-semibold text-[15px] ${scrolled ? "text-foreground" : "text-white"}`}>
               Heart of Africa
             </span>
