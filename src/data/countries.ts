@@ -1,3 +1,16 @@
+export type Briefing = {
+  capital: string;
+  language: string;
+  currency: string;
+  bestSeason: string;
+  flightTime: string; // from Italy
+  parks: string[];
+  signature: string; // signature experience
+  wildlife: string[];
+  whyCombine: string; // why pair with Mauritius
+  accent: string; // hsl tailwind token name (e.g., "accent", "ocean")
+};
+
 export type SafariCountry = {
   id: "tanzania" | "kenya" | "uganda" | "rwanda" | "zambia";
   /** Name as used in the GeoJSON (`properties.name`) */
@@ -11,6 +24,7 @@ export type SafariCountry = {
   idealFor: string;
   finale: string;
   options: { title: string; days: string; detail: string }[];
+  briefing: Briefing;
 };
 
 export const COUNTRIES: SafariCountry[] = [
@@ -29,6 +43,18 @@ export const COUNTRIES: SafariCountry[] = [
       { title: "Gorilla extension", days: "+3 giorni", detail: "Bwindi Impenetrable Forest" },
       { title: "Uganda completa", days: "10–12 giorni", detail: "Foreste, primati, savana, laghi" },
     ],
+    briefing: {
+      capital: "Kampala",
+      language: "Inglese, Swahili",
+      currency: "UGX",
+      bestSeason: "Giu–Set · Dic–Feb",
+      flightTime: "~10h da Italia (scalo)",
+      parks: ["Bwindi Impenetrable", "Queen Elizabeth", "Murchison Falls", "Kibale"],
+      signature: "Trekking con i gorilla di montagna a Bwindi",
+      wildlife: ["Gorilla", "Scimpanzé", "Leoni sugli alberi", "Ippopotami", "Elefanti"],
+      whyCombine: "Esperienza intensa nella foresta, poi totale decompressione in resort sul lagoon mauriziano: il contrasto perfetto tra adrenalina e quiete.",
+      accent: "forest",
+    },
   },
   {
     id: "rwanda",
@@ -45,6 +71,18 @@ export const COUNTRIES: SafariCountry[] = [
       { title: "Gorilla luxury", days: "6–7 giorni", detail: "Lodge top di gamma e doppio trekking" },
       { title: "Ruanda + Mauritius", days: "10–12 giorni", detail: "Combinato premium, ritmo selezionato" },
     ],
+    briefing: {
+      capital: "Kigali",
+      language: "Kinyarwanda, Francese, Inglese",
+      currency: "RWF",
+      bestSeason: "Giu–Set · Dic–Feb",
+      flightTime: "~9h da Italia (scalo)",
+      parks: ["Volcanoes NP", "Nyungwe Forest", "Akagera"],
+      signature: "Permit gorilla a Volcanoes: 1 ora faccia a faccia con un gruppo abituato",
+      wildlife: ["Gorilla di montagna", "Scimpanzé", "Colobi dorati", "Big Five (Akagera)"],
+      whyCombine: "Viaggio breve ma di altissimo impatto emotivo: poche notti in Africa, finale luxury alle Mauritius. Honeymoon d'autore.",
+      accent: "accent",
+    },
   },
   {
     id: "kenya",
@@ -61,6 +99,18 @@ export const COUNTRIES: SafariCountry[] = [
       { title: "Ovest iconico", days: "7–9 giorni", detail: "Naivasha · Nakuru · Masai Mara" },
       { title: "Luxury Kenya", days: "8–10 giorni", detail: "Itinerario alto di gamma con Elewana" },
     ],
+    briefing: {
+      capital: "Nairobi",
+      language: "Swahili, Inglese",
+      currency: "KES",
+      bestSeason: "Lug–Ott (migrazione) · Gen–Feb",
+      flightTime: "~8h diretto da Italia",
+      parks: ["Masai Mara", "Amboseli", "Tsavo", "Lake Nakuru", "Samburu"],
+      signature: "Grande migrazione degli gnu nel Masai Mara (Lug–Ott)",
+      wildlife: ["Big Five", "Gnu", "Zebre", "Fenicotteri rosa", "Elefanti dell'Amboseli"],
+      whyCombine: "Il binomio più leggibile: safari iconico + spiagge family/honeymoon alle Mauritius. Voli e logistica fluidi.",
+      accent: "savanna",
+    },
   },
   {
     id: "tanzania",
@@ -77,6 +127,18 @@ export const COUNTRIES: SafariCountry[] = [
       { title: "Sud remoto", days: "8–10 giorni", detail: "Nyerere · Ruaha, lodge piccoli e tribali" },
       { title: "Ovest esclusivo", days: "10–12 giorni", detail: "Katavi · Mahale, scimpanzé e wilderness pura" },
     ],
+    briefing: {
+      capital: "Dodoma (capitale) · Dar es Salaam",
+      language: "Swahili, Inglese",
+      currency: "TZS",
+      bestSeason: "Giu–Ott · Gen–Feb",
+      flightTime: "~9h da Italia (scalo)",
+      parks: ["Serengeti", "Ngorongoro", "Tarangire", "Ruaha", "Nyerere"],
+      signature: "Migrazione nel Serengeti e cratere di Ngorongoro nello stesso viaggio",
+      wildlife: ["Big Five", "Ghepardi", "Leoni", "Coccodrilli del Mara River", "Branchi enormi di elefanti"],
+      whyCombine: "Combo top per il mercato italiano: safari iconico in Tanzania, finale alle Mauritius più esclusivo dell'estensione Zanzibar.",
+      accent: "accent",
+    },
   },
   {
     id: "zambia",
@@ -93,6 +155,18 @@ export const COUNTRIES: SafariCountry[] = [
       { title: "Eastern axis", days: "8–10 giorni", detail: "Lower Zambezi · South Luangwa · private conservancies" },
       { title: "Zambia profondo", days: "10–12 giorni", detail: "Chiawa Safari · Bushcamp Company" },
     ],
+    briefing: {
+      capital: "Lusaka",
+      language: "Inglese, Bemba, Nyanja",
+      currency: "ZMW",
+      bestSeason: "Mag–Ott (stagione secca)",
+      flightTime: "~12h da Italia (scalo)",
+      parks: ["South Luangwa", "Lower Zambezi", "Kafue", "Liuwa Plain"],
+      signature: "Walking safari nato qui, a piedi tra leoni e bufali con guide armate",
+      wildlife: ["Leopardi (capitale del leopardo)", "Leoni", "Wild dog", "Ippopotami", "Coccodrilli"],
+      whyCombine: "Esperienza tecnica e remota per chi conosce già l'Africa, controbilanciata dal lusso quieto delle Mauritius.",
+      accent: "warm-brown",
+    },
   },
 ];
 
