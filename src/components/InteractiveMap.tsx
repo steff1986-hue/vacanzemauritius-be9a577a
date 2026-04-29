@@ -18,8 +18,10 @@ import {
   Heart,
   Navigation,
   Waves,
+  Info,
 } from "lucide-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const africaGeo = africaGeoRaw as unknown as FeatureCollection<Geometry, { name: string }>;
 
@@ -405,15 +407,14 @@ const InteractiveMap = () => {
                     onMouseEnter={() => handleEnter(c.id)}
                     onMouseLeave={handleLeave}
                   >
-                    {(isActive || isHover) && (
+                    {isHover && !isActive && (
                       <circle
                         cx={x}
                         cy={y}
-                        r={isActive ? 28 : 22}
-                        fill="hsl(var(--background) / 0.28)"
-                        stroke="hsl(var(--background) / 0.52)"
+                        r={14}
+                        fill="none"
+                        stroke="hsl(var(--accent) / 0.55)"
                         strokeWidth="1"
-                        className={isActive && !reduced ? "animate-pulse-dot" : ""}
                       />
                     )}
                     <circle
@@ -450,15 +451,6 @@ const InteractiveMap = () => {
               })}
 
               <g pointerEvents="none" filter="url(#map-shadow)">
-                <circle
-                  cx={mauritiusXY.x}
-                  cy={mauritiusXY.y}
-                  r="44"
-                  fill="hsl(var(--celeste) / 0.26)"
-                  stroke="hsl(var(--background) / 0.54)"
-                  strokeWidth="1"
-                  className={reduced ? "" : "animate-pulse-dot"}
-                />
                 <circle cx={mauritiusXY.x} cy={mauritiusXY.y} r="17" fill="hsl(var(--ocean) / 0.34)" />
                 <circle
                   cx={mauritiusXY.x}
@@ -665,14 +657,56 @@ const FlightCard = ({ country, reduced }: { country: SafariCountry; reduced: boo
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-5">
-          <div className="rounded-xl bg-muted/60 border border-border px-3 py-2.5">
-            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-1">
-              <Clock size={12} className="text-accent" /> Durata stimata
-            </div>
-            <div className="text-foreground text-[13px] font-medium leading-tight">
-              {b.flightTime}
-            </div>
-          </div>
+          <Tooltip delayDuration={150}>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="text-left rounded-xl bg-muted/60 border border-border px-3 py-2.5 hover:border-accent/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-smooth"
+                aria-label="Dettaglio composizione durata volo"
+              >
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-1">
+                  <Clock size={12} className="text-accent" /> Durata stimata
+                  <Info size={11} className="ml-auto text-muted-foreground/70" />
+                </div>
+                <div className="text-foreground text-[13px] font-medium leading-tight underline decoration-dotted decoration-accent/50 underline-offset-4">
+                  {b.flightTime}
+                </div>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[280px] p-0 bg-card text-foreground border border-border shadow-elevated">
+              <div className="p-3.5">
+                <div className="text-[10px] uppercase tracking-[0.18em] text-accent font-medium mb-2">
+                  Come si compone
+                </div>
+                <ul className="space-y-2 text-[12px] leading-snug">
+                  <li className="flex gap-2">
+                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-foreground shrink-0" />
+                    <div>
+                      <div className="font-medium text-foreground">Italia → Africa</div>
+                      <div className="text-muted-foreground">{b.flightTime}, volo principale</div>
+                    </div>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+                    <div>
+                      <div className="font-medium text-foreground">Scalo</div>
+                      <div className="text-muted-foreground">~1–3h in {b.stops[0]?.split(" (")[0] ?? "hub intercontinentale"}</div>
+                    </div>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-ocean-deep shrink-0" />
+                    <div>
+                      <div className="font-medium text-foreground">{country.name.split(" ")[0]} → Mauritius</div>
+                      <div className="text-muted-foreground">~5–7h via Nairobi o Johannesburg</div>
+                    </div>
+                  </li>
+                </ul>
+                <div className="mt-2.5 pt-2.5 border-t border-border text-[11px] text-muted-foreground">
+                  Stima totale porta a porta: variabile in base a scalo e tratta finale.
+                </div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
           <div className="rounded-xl bg-muted/60 border border-border px-3 py-2.5">
             <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-1">
               <Navigation size={12} className="text-accent" /> Routing
