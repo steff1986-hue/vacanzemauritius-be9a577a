@@ -593,6 +593,8 @@ const InteractiveMap = () => {
                 Costruisci questo viaggio <ArrowRight size={16} />
               </a>
             </article>
+
+            <FlightCard country={active} reduced={reduced} />
           </div>
         </div>
       </div>
