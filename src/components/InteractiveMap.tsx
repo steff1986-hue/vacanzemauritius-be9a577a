@@ -18,8 +18,10 @@ import {
   Heart,
   Navigation,
   Waves,
+  Info,
 } from "lucide-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const africaGeo = africaGeoRaw as unknown as FeatureCollection<Geometry, { name: string }>;
 
