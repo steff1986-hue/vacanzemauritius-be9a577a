@@ -316,33 +316,83 @@ const InteractiveMap = () => {
                 })}
               </g>
 
-              <path
-                ref={pathRef}
-                key={`flight-${active.id}`}
-                d={flightD}
-                fill="none"
-                stroke="hsl(var(--background))"
-                strokeWidth="7"
-                strokeLinecap="round"
-                opacity="0.72"
-              />
-              <path
-                d={flightD}
-                fill="none"
-                stroke="hsl(var(--accent))"
-                strokeWidth="2.5"
-                strokeDasharray="8 9"
-                strokeLinecap="round"
-                style={
-                  reduced
-                    ? { opacity: 0.92 }
-                    : {
-                        strokeDasharray: pathLength || 1000,
-                        strokeDashoffset: pathLength || 1000,
-                        animation: "draw-line 1.2s cubic-bezier(0.22,1,0.36,1) forwards",
-                      }
-                }
-              />
+              {/* Ghost routes: every country → Mauritius, faintly visible always */}
+              <g pointerEvents="none">
+                {ghostRoutes.map((r) => {
+                  const isActive = r.id === active.id;
+                  if (isActive) return null;
+                  return (
+                    <path
+                      key={`ghost-${r.id}`}
+                      d={r.d}
+                      fill="none"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.18"
+                      strokeWidth="1"
+                      strokeDasharray="2 6"
+                      strokeLinecap="round"
+                      style={{ transition: reduced ? "none" : "stroke-opacity 0.35s ease" }}
+                    />
+                  );
+                })}
+              </g>
+
+              {/* Active route: halo + draw-in + flowing dashes */}
+              <g pointerEvents="none">
+                {!reduced && (
+                  <path
+                    key={`glow-${active.id}`}
+                    d={flightD}
+                    fill="none"
+                    stroke="url(#route-gradient)"
+                    strokeWidth="9"
+                    strokeLinecap="round"
+                    opacity="0.45"
+                    filter="url(#route-glow-filter)"
+                    className="animate-route-glow"
+                  />
+                )}
+                <path
+                  ref={pathRef}
+                  key={`flight-base-${active.id}`}
+                  d={flightD}
+                  fill="none"
+                  stroke="hsl(var(--background))"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  opacity="0.78"
+                />
+                <path
+                  key={`flight-draw-${active.id}`}
+                  d={flightD}
+                  fill="none"
+                  stroke="url(#route-gradient)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  style={
+                    reduced
+                      ? { opacity: 0.95 }
+                      : {
+                          strokeDasharray: pathLength || 1000,
+                          strokeDashoffset: pathLength || 1000,
+                          animation: "draw-line 1.1s cubic-bezier(0.22,1,0.36,1) forwards",
+                        }
+                  }
+                />
+                {!reduced && (
+                  <path
+                    key={`flight-flow-${active.id}`}
+                    d={flightD}
+                    fill="none"
+                    stroke="hsl(var(--background))"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray="2 14"
+                    className="animate-flow-dash"
+                    style={{ opacity: 0.95, animationDelay: "1s" }}
+                  />
+                )}
+              </g>
 
               {safariPins.map(({ country: c, x, y }) => {
                 const isActive = c.id === active.id;
