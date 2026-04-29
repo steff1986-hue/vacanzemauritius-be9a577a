@@ -405,15 +405,14 @@ const InteractiveMap = () => {
                     onMouseEnter={() => handleEnter(c.id)}
                     onMouseLeave={handleLeave}
                   >
-                    {(isActive || isHover) && (
+                    {isHover && !isActive && (
                       <circle
                         cx={x}
                         cy={y}
-                        r={isActive ? 28 : 22}
-                        fill="hsl(var(--background) / 0.28)"
-                        stroke="hsl(var(--background) / 0.52)"
+                        r={14}
+                        fill="none"
+                        stroke="hsl(var(--accent) / 0.55)"
                         strokeWidth="1"
-                        className={isActive && !reduced ? "animate-pulse-dot" : ""}
                       />
                     )}
                     <circle
