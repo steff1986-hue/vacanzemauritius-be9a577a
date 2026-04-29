@@ -1,4 +1,5 @@
 import { Mail, MessageCircle, Globe } from "lucide-react";
+import { Link } from "react-router-dom";
 import logoHoae from "@/assets/logo-hoae.png";
 
 const Footer = () => {
@@ -62,7 +63,20 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-primary-foreground/15 flex flex-col md:flex-row gap-3 items-start md:items-center justify-between text-xs text-primary-foreground/60">
           <p>© {new Date().getFullYear()} Heart of Africa Expedition · Tutti i diritti riservati.</p>
-          <p>Dal remoto del continente africano all'Oceano Indiano.</p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <Link to="/privacy-policy" className="hover:text-celeste transition-smooth">Privacy Policy</Link>
+            <Link to="/cookie-policy" className="hover:text-celeste transition-smooth">Cookie Policy</Link>
+            <button
+              type="button"
+              onClick={() => {
+                localStorage.removeItem("cookie-consent");
+                window.dispatchEvent(new Event("cookie-consent-reset"));
+              }}
+              className="hover:text-celeste transition-smooth"
+            >
+              Preferenze cookie
+            </button>
+          </div>
         </div>
       </div>
     </footer>
