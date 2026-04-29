@@ -128,6 +128,8 @@ export default {
         "draw-line": "draw-line 2s ease-out forwards",
         "pulse-dot": "pulse-dot 2.4s ease-in-out infinite",
         "shimmer": "shimmer 3s linear infinite",
+        "flow-dash": "flow-dash 1.6s linear infinite",
+        "route-glow": "route-glow 3.2s ease-in-out infinite",
       },
     },
   },
