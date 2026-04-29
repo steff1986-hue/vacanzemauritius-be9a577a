@@ -593,12 +593,116 @@ const InteractiveMap = () => {
                 Costruisci questo viaggio <ArrowRight size={16} />
               </a>
             </article>
+
+            <FlightCard country={active} reduced={reduced} />
           </div>
         </div>
       </div>
 
       {briefingOpen && <BriefingModal country={active} onClose={() => setBriefingOpen(false)} reduced={reduced} />}
     </section>
+  );
+};
+
+const FlightCard = ({ country, reduced }: { country: SafariCountry; reduced: boolean }) => {
+  const b = country.briefing;
+  return (
+    <aside
+      key={`flight-${country.id}`}
+      className={`mt-4 relative overflow-hidden rounded-[2rem] border border-border bg-card shadow-soft ${
+        reduced ? "" : "animate-fade-in"
+      }`}
+      aria-label="Dettagli volo e scali"
+    >
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-ocean" />
+      <div className="p-6 lg:p-7">
+        <div className="flex items-center gap-2 text-ocean-deep text-[11px] font-medium uppercase tracking-[0.2em] mb-4">
+          <Plane size={14} />
+          Volo & rotta
+        </div>
+
+        <div className="relative flex items-center gap-3 mb-5">
+          <div className="flex flex-col items-center min-w-0">
+            <div className="w-9 h-9 rounded-full bg-foreground text-background grid place-items-center text-[10px] font-bold">
+              {country.name.slice(0, 3).toUpperCase()}
+            </div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1.5 truncate max-w-[80px]">
+              {country.name}
+            </div>
+          </div>
+
+          <div className="relative flex-1 h-9 flex items-center">
+            <svg viewBox="0 0 200 28" className="w-full h-7" preserveAspectRatio="none">
+              <path
+                d="M 4 22 Q 100 -6 196 22"
+                fill="none"
+                stroke="hsl(var(--accent))"
+                strokeWidth="1.6"
+                strokeDasharray="3 5"
+                strokeLinecap="round"
+                style={reduced ? undefined : { animation: "flow-dash 1.6s linear infinite" }}
+              />
+              <circle cx="4" cy="22" r="2.6" fill="hsl(var(--foreground))" />
+              <circle cx="196" cy="22" r="2.6" fill="hsl(var(--ocean-deep))" />
+            </svg>
+            <div
+              className={`absolute left-1/2 -translate-x-1/2 -top-0.5 w-7 h-7 rounded-full bg-background border border-accent grid place-items-center shadow-soft ${
+                reduced ? "" : "animate-float"
+              }`}
+            >
+              <Plane size={13} className="text-accent -rotate-12" />
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center min-w-0">
+            <div className="w-9 h-9 rounded-full bg-ocean-deep text-background grid place-items-center text-[10px] font-bold">
+              MRU
+            </div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1.5">
+              Mauritius
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 mb-5">
+          <div className="rounded-xl bg-muted/60 border border-border px-3 py-2.5">
+            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-1">
+              <Clock size={12} className="text-accent" /> Durata stimata
+            </div>
+            <div className="text-foreground text-[13px] font-medium leading-tight">
+              {b.flightTime}
+            </div>
+          </div>
+          <div className="rounded-xl bg-muted/60 border border-border px-3 py-2.5">
+            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-1">
+              <Navigation size={12} className="text-accent" /> Routing
+            </div>
+            <div className="text-foreground text-[13px] font-medium leading-tight">
+              {b.routing}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground font-medium mb-2">
+            Scali tipici dall'Italia
+          </div>
+          <ul className="space-y-1.5">
+            {b.stops.map((s) => (
+              <li key={s} className="flex items-start gap-2 text-[13px]">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+                <span className="text-foreground/85">{s}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-border text-[11px] text-muted-foreground leading-relaxed">
+          + tratta finale <strong className="text-foreground">{country.name.split(" ")[0]} → Mauritius</strong>{" "}
+          via Nairobi o Johannesburg, ~5–7h.
+        </div>
+      </div>
+    </aside>
   );
 };
 
@@ -794,6 +898,30 @@ const BriefingModal = ({
               <p className="text-sm text-muted-foreground">
                 <strong className="text-foreground">Finale:</strong> {country.finale}
               </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-muted/40 p-5">
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-medium mb-3">
+              <Plane size={14} className="text-accent" /> Volo dall'Italia
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3 mb-3">
+              <div className="text-sm">
+                <span className="text-muted-foreground">Durata: </span>
+                <span className="text-foreground font-medium">{b.flightTime}</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Routing: </span>
+                <span className="text-foreground font-medium">{b.routing}</span>
+              </div>
+            </div>
+            <div className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-1.5">Scali tipici</div>
+            <div className="flex flex-wrap gap-1.5">
+              {b.stops.map((s) => (
+                <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-background border border-border text-foreground/85">
+                  {s}
+                </span>
+              ))}
             </div>
           </div>
 
