@@ -449,15 +449,6 @@ const InteractiveMap = () => {
               })}
 
               <g pointerEvents="none" filter="url(#map-shadow)">
-                <circle
-                  cx={mauritiusXY.x}
-                  cy={mauritiusXY.y}
-                  r="44"
-                  fill="hsl(var(--celeste) / 0.26)"
-                  stroke="hsl(var(--background) / 0.54)"
-                  strokeWidth="1"
-                  className={reduced ? "" : "animate-pulse-dot"}
-                />
                 <circle cx={mauritiusXY.x} cy={mauritiusXY.y} r="17" fill="hsl(var(--ocean) / 0.34)" />
                 <circle
                   cx={mauritiusXY.x}
