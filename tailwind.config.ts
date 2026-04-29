@@ -108,6 +108,14 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "flow-dash": {
+          "0%": { strokeDashoffset: "0" },
+          "100%": { strokeDashoffset: "-34" },
+        },
+        "route-glow": {
+          "0%, 100%": { opacity: "0.55", filter: "blur(2px)" },
+          "50%": { opacity: "1", filter: "blur(3.5px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -120,6 +128,8 @@ export default {
         "draw-line": "draw-line 2s ease-out forwards",
         "pulse-dot": "pulse-dot 2.4s ease-in-out infinite",
         "shimmer": "shimmer 3s linear infinite",
+        "flow-dash": "flow-dash 1.6s linear infinite",
+        "route-glow": "route-glow 3.2s ease-in-out infinite",
       },
     },
   },

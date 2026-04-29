@@ -92,16 +92,26 @@ const InteractiveMap = () => {
 
   const activePin = safariPins.find((p) => p.country.id === active.id) ?? safariPins[0];
 
-  const flightD = useMemo(() => {
-    const sx = activePin.x;
-    const sy = activePin.y;
-    const ex = mauritiusXY.x;
-    const ey = mauritiusXY.y;
+  const buildArc = useCallback((sx: number, sy: number, ex: number, ey: number) => {
     const dx = ex - sx;
     const mx = sx + dx * 0.54;
     const my = Math.min(sy, ey) - Math.max(74, Math.abs(dx) * 0.11);
     return `M ${sx},${sy} Q ${mx},${my} ${ex},${ey}`;
-  }, [activePin, mauritiusXY]);
+  }, []);
+
+  const ghostRoutes = useMemo(
+    () =>
+      safariPins.map(({ country: c, x, y }) => ({
+        id: c.id,
+        d: buildArc(x, y, mauritiusXY.x, mauritiusXY.y),
+      })),
+    [safariPins, mauritiusXY, buildArc],
+  );
+
+  const flightD = useMemo(
+    () => buildArc(activePin.x, activePin.y, mauritiusXY.x, mauritiusXY.y),
+    [activePin, mauritiusXY, buildArc],
+  );
 
   const pathRef = useRef<SVGPathElement | null>(null);
   const [pathLength, setPathLength] = useState(0);
@@ -221,6 +231,15 @@ const InteractiveMap = () => {
                 <filter id="country-lift" x="-30%" y="-30%" width="160%" height="160%">
                   <feDropShadow dx="0" dy="8" stdDeviation="8" floodColor="hsl(var(--foreground))" floodOpacity="0.18" />
                 </filter>
+                <linearGradient id="route-gradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="hsl(var(--accent))" />
+                  <stop offset="55%" stopColor="hsl(var(--savanna))" />
+                  <stop offset="100%" stopColor="hsl(var(--ocean))" />
+                </linearGradient>
+                <filter id="route-glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3.2" result="b" />
+                  <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
               </defs>
 
               <rect width={VIEW_W} height={VIEW_H} fill="url(#map-ocean)" />
@@ -297,33 +316,83 @@ const InteractiveMap = () => {
                 })}
               </g>
 
-              <path
-                ref={pathRef}
-                key={`flight-${active.id}`}
-                d={flightD}
-                fill="none"
-                stroke="hsl(var(--background))"
-                strokeWidth="7"
-                strokeLinecap="round"
-                opacity="0.72"
-              />
-              <path
-                d={flightD}
-                fill="none"
-                stroke="hsl(var(--accent))"
-                strokeWidth="2.5"
-                strokeDasharray="8 9"
-                strokeLinecap="round"
-                style={
-                  reduced
-                    ? { opacity: 0.92 }
-                    : {
-                        strokeDasharray: pathLength || 1000,
-                        strokeDashoffset: pathLength || 1000,
-                        animation: "draw-line 1.2s cubic-bezier(0.22,1,0.36,1) forwards",
-                      }
-                }
-              />
+              {/* Ghost routes: every country → Mauritius, faintly visible always */}
+              <g pointerEvents="none">
+                {ghostRoutes.map((r) => {
+                  const isActive = r.id === active.id;
+                  if (isActive) return null;
+                  return (
+                    <path
+                      key={`ghost-${r.id}`}
+                      d={r.d}
+                      fill="none"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.18"
+                      strokeWidth="1"
+                      strokeDasharray="2 6"
+                      strokeLinecap="round"
+                      style={{ transition: reduced ? "none" : "stroke-opacity 0.35s ease" }}
+                    />
+                  );
+                })}
+              </g>
+
+              {/* Active route: halo + draw-in + flowing dashes */}
+              <g pointerEvents="none">
+                {!reduced && (
+                  <path
+                    key={`glow-${active.id}`}
+                    d={flightD}
+                    fill="none"
+                    stroke="url(#route-gradient)"
+                    strokeWidth="9"
+                    strokeLinecap="round"
+                    opacity="0.45"
+                    filter="url(#route-glow-filter)"
+                    className="animate-route-glow"
+                  />
+                )}
+                <path
+                  ref={pathRef}
+                  key={`flight-base-${active.id}`}
+                  d={flightD}
+                  fill="none"
+                  stroke="hsl(var(--background))"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  opacity="0.78"
+                />
+                <path
+                  key={`flight-draw-${active.id}`}
+                  d={flightD}
+                  fill="none"
+                  stroke="url(#route-gradient)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  style={
+                    reduced
+                      ? { opacity: 0.95 }
+                      : {
+                          strokeDasharray: pathLength || 1000,
+                          strokeDashoffset: pathLength || 1000,
+                          animation: "draw-line 1.1s cubic-bezier(0.22,1,0.36,1) forwards",
+                        }
+                  }
+                />
+                {!reduced && (
+                  <path
+                    key={`flight-flow-${active.id}`}
+                    d={flightD}
+                    fill="none"
+                    stroke="hsl(var(--background))"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray="2 14"
+                    className="animate-flow-dash"
+                    style={{ opacity: 0.95, animationDelay: "1s" }}
+                  />
+                )}
+              </g>
 
               {safariPins.map(({ country: c, x, y }) => {
                 const isActive = c.id === active.id;
