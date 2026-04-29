@@ -901,6 +901,30 @@ const BriefingModal = ({
             </div>
           </div>
 
+          <div className="rounded-2xl border border-border bg-muted/40 p-5">
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-medium mb-3">
+              <Plane size={14} className="text-accent" /> Volo dall'Italia
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3 mb-3">
+              <div className="text-sm">
+                <span className="text-muted-foreground">Durata: </span>
+                <span className="text-foreground font-medium">{b.flightTime}</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Routing: </span>
+                <span className="text-foreground font-medium">{b.routing}</span>
+              </div>
+            </div>
+            <div className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-1.5">Scali tipici</div>
+            <div className="flex flex-wrap gap-1.5">
+              {b.stops.map((s) => (
+                <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-background border border-border text-foreground/85">
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <a
               href="#richiesta"
