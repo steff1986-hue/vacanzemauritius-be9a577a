@@ -4,6 +4,10 @@ export type Briefing = {
   currency: string;
   bestSeason: string;
   flightTime: string; // from Italy
+  /** Typical airline hubs / stopover airports from Italy */
+  stops: string[];
+  /** Short note on the routing (e.g. "1 scalo via Doha") */
+  routing: string;
   parks: string[];
   signature: string; // signature experience
   wildlife: string[];
