@@ -53,6 +53,8 @@ export const COUNTRIES: SafariCountry[] = [
       currency: "UGX",
       bestSeason: "Giu–Set · Dic–Feb",
       flightTime: "~10h da Italia (scalo)",
+      stops: ["Doha (Qatar Airways)", "Addis Abeba (Ethiopian)", "Istanbul (Turkish)"],
+      routing: "1 scalo · arrivo Entebbe (EBB)",
       parks: ["Bwindi Impenetrable", "Queen Elizabeth", "Murchison Falls", "Kibale"],
       signature: "Trekking con i gorilla di montagna a Bwindi",
       wildlife: ["Gorilla", "Scimpanzé", "Leoni sugli alberi", "Ippopotami", "Elefanti"],
