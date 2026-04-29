@@ -4,7 +4,7 @@ import Concept from "@/components/Concept";
 import InteractiveMap from "@/components/InteractiveMap";
 import Combinations from "@/components/Combinations";
 import Products from "@/components/Products";
-import Partners from "@/components/Partners";
+
 import Founder from "@/components/Founder";
 import Trust from "@/components/Trust";
 import Budget from "@/components/Budget";
@@ -21,7 +21,6 @@ const Index = () => {
       <InteractiveMap />
       <Combinations />
       <Products />
-      <Partners />
       <Founder />
       <Trust />
       <Budget />
