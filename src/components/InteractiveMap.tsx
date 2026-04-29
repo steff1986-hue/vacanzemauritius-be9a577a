@@ -92,16 +92,26 @@ const InteractiveMap = () => {
 
   const activePin = safariPins.find((p) => p.country.id === active.id) ?? safariPins[0];
 
-  const flightD = useMemo(() => {
-    const sx = activePin.x;
-    const sy = activePin.y;
-    const ex = mauritiusXY.x;
-    const ey = mauritiusXY.y;
+  const buildArc = useCallback((sx: number, sy: number, ex: number, ey: number) => {
     const dx = ex - sx;
     const mx = sx + dx * 0.54;
     const my = Math.min(sy, ey) - Math.max(74, Math.abs(dx) * 0.11);
     return `M ${sx},${sy} Q ${mx},${my} ${ex},${ey}`;
-  }, [activePin, mauritiusXY]);
+  }, []);
+
+  const ghostRoutes = useMemo(
+    () =>
+      safariPins.map(({ country: c, x, y }) => ({
+        id: c.id,
+        d: buildArc(x, y, mauritiusXY.x, mauritiusXY.y),
+      })),
+    [safariPins, mauritiusXY, buildArc],
+  );
+
+  const flightD = useMemo(
+    () => buildArc(activePin.x, activePin.y, mauritiusXY.x, mauritiusXY.y),
+    [activePin, mauritiusXY, buildArc],
+  );
 
   const pathRef = useRef<SVGPathElement | null>(null);
   const [pathLength, setPathLength] = useState(0);
