@@ -231,6 +231,15 @@ const InteractiveMap = () => {
                 <filter id="country-lift" x="-30%" y="-30%" width="160%" height="160%">
                   <feDropShadow dx="0" dy="8" stdDeviation="8" floodColor="hsl(var(--foreground))" floodOpacity="0.18" />
                 </filter>
+                <linearGradient id="route-gradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="hsl(var(--accent))" />
+                  <stop offset="55%" stopColor="hsl(var(--savanna))" />
+                  <stop offset="100%" stopColor="hsl(var(--ocean))" />
+                </linearGradient>
+                <filter id="route-glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3.2" result="b" />
+                  <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
               </defs>
 
               <rect width={VIEW_W} height={VIEW_H} fill="url(#map-ocean)" />
