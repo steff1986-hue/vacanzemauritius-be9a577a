@@ -172,8 +172,8 @@ const InteractiveMap = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          <div className="lg:col-span-8 relative overflow-hidden rounded-[2rem] border border-border bg-card shadow-elevated">
+        <div className="flex flex-col gap-6 lg:gap-8">
+          <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card shadow-elevated">
             <div className="absolute inset-x-0 top-0 z-10 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
               <div className="glass px-3 py-2 rounded-full border border-border shadow-soft flex items-center gap-2 text-xs font-medium">
                 <span className={`w-1.5 h-1.5 rounded-full bg-accent ${reduced ? "" : "animate-pulse-dot"}`} />
@@ -536,7 +536,7 @@ const InteractiveMap = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-4 lg:sticky lg:top-24">
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
             <article
               key={active.id}
               className={`relative overflow-hidden bg-card border border-border rounded-[2rem] p-7 lg:p-8 shadow-elevated ${
@@ -546,7 +546,7 @@ const InteractiveMap = () => {
               <div className="absolute inset-x-0 top-0 h-1 bg-savanna-ocean" />
               <div className="flex items-center gap-2 text-accent text-xs font-medium uppercase tracking-[0.2em] mb-3">
                 <MapPin size={14} />
-                Rotta selezionata
+                Combo selezionata
               </div>
               <h3 className="font-display text-3xl lg:text-4xl font-medium text-foreground">
                 {active.name} <span className="text-accent">→</span> Mauritius
@@ -601,7 +601,7 @@ const FlightCard = ({ country, reduced }: { country: SafariCountry; reduced: boo
   return (
     <aside
       key={`flight-${country.id}`}
-      className={`mt-4 relative overflow-hidden rounded-[2rem] border border-border bg-card shadow-soft ${
+      className={`relative overflow-hidden rounded-[2rem] border border-border bg-card shadow-soft ${
         reduced ? "" : "animate-fade-in"
       }`}
       aria-label="Dettagli volo e scali"

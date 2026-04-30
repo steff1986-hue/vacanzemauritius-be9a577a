@@ -1,5 +1,5 @@
 import { Quote } from "lucide-react";
-import founderImg from "@/assets/founder.jpg";
+import founderImg from "@/assets/WhatsApp_Image_2025-11-13_at_13.05.47.jpeg";
 import logoHoae from "@/assets/logo-hoae.png";
 
 const badges = ["Africa tailor made", "Safari + mare luxury", "17 destinazioni HOAEXP", "Progettazione umana"];
@@ -15,10 +15,10 @@ const Founder = () => {
               <img
                 src={founderImg}
                 alt="Stefano Marra, Founder Heart of Africa Expedition"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-primary/10 to-transparent" />
               <div className="absolute bottom-5 left-5 right-5 glass-dark text-white px-4 py-3 rounded-xl">
                 <div className="font-display text-lg leading-tight">Stefano Marra</div>
                 <div className="text-xs text-white/70 uppercase tracking-[0.2em]">

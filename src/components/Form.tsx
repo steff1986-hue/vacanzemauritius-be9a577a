@@ -15,24 +15,23 @@ const Form = () => {
     messaggio: "",
   });
 
-  const buildBody = () => {
-    return [
-      `Nome: ${data.nome}`,
-      `Email: ${data.email}`,
-      `Telefono / WhatsApp: ${data.telefono}`,
-      `Tipo viaggio: ${data.tipo}`,
-      `Nazione safari: ${data.nazione}`,
-      `Budget: ${data.budget}`,
-      "",
-      "Messaggio:",
-      data.messaggio,
-    ].join("%0D%0A");
-  };
-
   const handleEmail = (e: React.FormEvent) => {
     e.preventDefault();
     const subject = encodeURIComponent(`Richiesta viaggio — ${data.tipo}`);
-    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${buildBody()}`;
+    const body = encodeURIComponent(
+      [
+        `Nome: ${data.nome}`,
+        `Email: ${data.email}`,
+        `Telefono / WhatsApp: ${data.telefono}`,
+        `Tipo viaggio: ${data.tipo}`,
+        `Nazione safari: ${data.nazione}`,
+        `Budget: ${data.budget}`,
+        "",
+        "Messaggio:",
+        data.messaggio,
+      ].join("\n")
+    );
+    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
   };
 
   const handleWhatsapp = () => {
