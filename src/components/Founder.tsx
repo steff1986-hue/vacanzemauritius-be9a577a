@@ -1,5 +1,6 @@
 import { Quote } from "lucide-react";
 import founderImg from "@/assets/founder.jpg";
+import logoHoae from "@/assets/logo-hoae.png";
 
 const badges = ["Africa tailor made", "Safari + mare luxury", "17 destinazioni HOAEXP", "Progettazione umana"];
 
@@ -25,10 +26,8 @@ const Founder = () => {
                 </div>
               </div>
             </div>
-            <div className="absolute -bottom-6 -right-2 lg:-right-8 w-28 h-28 rounded-full bg-warm grid place-items-center text-primary-foreground shadow-elevated rotate-6 hidden md:grid">
-              <span className="text-center text-[10px] uppercase tracking-[0.2em] leading-tight">
-                Heart of<br />Africa<br />Expedition
-              </span>
+            <div className="absolute -bottom-6 -right-2 lg:-right-8 w-28 h-28 rounded-full bg-warm grid place-items-center text-primary-foreground shadow-elevated rotate-6 hidden md:grid p-3">
+              <img src={logoHoae} alt="Heart of Africa Expedition" className="w-full h-full object-contain" loading="lazy" />
             </div>
           </div>
 
